@@ -1,0 +1,84 @@
+body{
+    background-color: white;
+    margin:0;
+    padding:0;
+}
+
+h1{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-family:"Nunito";
+    font-size:2.5rem;
+    font-weight:300;
+    margin-top:.5em;
+    margin-bottom:.5em;
+}
+
+hr{
+    border: none; 
+    height: 2px; 
+    background-color: #000000;
+}
+
+div.main{
+    display: flex;
+    gap:8em;
+    align-items: center;
+    justify-content: center;
+
+    margin-top:2.5em;
+}
+
+div#book{
+    width: 48vw;
+    height:80vh;
+    background: #000d36;
+    border:3px solid #5c5c7c;
+    border-radius:4px;
+    margin-right:.5em;
+}
+
+div.form{
+    margin-right:7em;
+    font-family:"Montserrat";
+}
+
+div.form label{
+    font-weight:500;
+    font-size:2rem;
+
+    display:block;
+    margin-bottom:.3em;
+}
+
+div.form input{
+    width:30vw;
+    height:6vh;
+    font-size:1rem;
+    border-radius:4px;
+    border:#000d36 solid 2px;
+
+    margin-bottom:1.2em;
+    padding-left:1em;
+}
+
+div.form button{
+    width:6.5em;
+    height:2.5em;
+    font-size:.8rem;
+    color: black;
+    border-radius:3px;
+}
+
+div.form button#submit{
+    background-color:#A3FF8E;
+    border: solid 1px #043f11;
+    margin-left:9vw;
+}
+
+div.form button#reset{
+    background-color:#FFA0A0;
+    border: solid 1px #FF0000;
+    margin-left:1em;
+}
