@@ -2,6 +2,35 @@ body{
     background-color: white;
     margin:0;
     padding:0;
+
+}
+
+div.nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin:2em;
+}
+
+.nav div{
+    display: flex;
+    gap:1.5em;
+}
+
+.nav a{
+    color:#000;
+    text-decoration: none;
+    font-weight: 300;
+    font-family:"Nunito";
+    font-size:1.5rem;
+}
+
+.nav a:visited{
+    color: #000;
+    text-decoration:none;
+    font-weight: 300;
+    font-family:"Nunito";
+    font-size:1.5rem;
 }
 
 h1{
@@ -9,16 +38,10 @@ h1{
     justify-content: center;
     align-items: center;
     font-family:"Nunito";
-    font-size:2.5rem;
-    font-weight:300;
+    font-size:2rem;
+    font-weight:500;
     margin-top:.5em;
     margin-bottom:.5em;
-}
-
-hr{
-    border: none; 
-    height: 2px; 
-    background-color: #000000;
 }
 
 div.main{
@@ -26,8 +49,9 @@ div.main{
     gap:8em;
     align-items: center;
     justify-content: center;
-
     margin-top:2.5em;
+    margin-right:2em;
+    margin-left:2.5em;
 }
 
 div#book{
