@@ -37,7 +37,7 @@ router.post('/upload', upload.single('pdf'), async (req, res) => {
 console.log('🛠 req.body:', req.body);
 console.log('🛠 req.file:', req.file);
 
-const { title, author, published, description, keywords } = req.body;
+const { title, author, published, description, keywords, location} = req.body;
 if (!req.file) return res.status(400).json({ message: "No PDF uploaded" });
 
 const book = new Book({
@@ -46,11 +46,30 @@ author,
 published,
 description,
 keywords: keywords.split(',').map(k => k.trim().toLowerCase()),
-pdfUrl: 'uploads/' + req.file.filename
+pdfUrl: 'uploads/' + req.file.filename,
+location
 });
+
 
 await book.save();
 res.status(201).json({ message: "✅ Book uploaded", book });
+});
+
+// Update a book by ID
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedBook = await Book.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedBook) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+    res.json({ message: '✅ Book updated', book: updatedBook });
+  } catch (err) {
+    res.status(500).json({ message: '❌ Error updating book' });
+  }
 });
 
 module.exports = router;

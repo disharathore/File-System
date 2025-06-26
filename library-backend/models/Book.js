@@ -8,6 +8,7 @@ const BookSchema = new mongoose.Schema({
   description: String,
   keywords: [String],
   pdfUrl: String,
+  location: String
 });
 
 module.exports = mongoose.model('book', BookSchema);
