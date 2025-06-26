@@ -8,9 +8,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const bookDiv = document.getElementById("book");
     const resetBtn = document.getElementById("reset");
 
-   let activeKeywords = [];
+    let activeKeywords = [];
 
-    // 🔁 Reusable search function
+    // Tooltip setup (single shared box)
+    const globalTooltip = document.createElement("div");
+    globalTooltip.className = "hover-box";
+    Object.assign(globalTooltip.style, {
+        position: "absolute",
+        background: "#fff",
+        padding: "0.5em 0.7em",
+        border: "1px solid #ccc",
+        borderRadius: "4px",
+        fontSize: "0.9rem",
+        fontFamily: "Nunito",
+        color: "#000",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+        whiteSpace: "nowrap",
+        zIndex: "10",
+        display: "none"
+    });
+    document.body.appendChild(globalTooltip);
+
     async function runSearch() {
         listDiv.innerHTML = "🔍 Searching...";
         bookDiv.innerHTML = "";
@@ -21,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const allBooks = snapshot.docs.map(doc => doc.data());
 
             const filteredBooks = allBooks.filter(book =>
-                activeKeywords.some(kw => {
+                activeKeywords.every(kw => {
                     const title = (book.title || "").toLowerCase();
                     const author = (book.author || "").toLowerCase();
                     const description = (book.description || "").toLowerCase();
@@ -36,13 +54,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             );
 
-
             if (!filteredBooks.length) {
                 listDiv.innerHTML = `<p>No books found for keywords: <strong>${activeKeywords.join(", ")}</strong></p>`;
                 return;
             }
 
-            // Render filter chips
+            // Show keyword filters
             let filtersHTML = `<div style="margin-bottom: 1em; font-family: Montserrat; font-weight: 500;">
                 🔍 Filters: `;
 
@@ -51,16 +68,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     <span style="
                         display: inline-block;
                         border: 1.5px solid rgb(51, 51, 51);
-                        background-color:rgb(255, 255, 255);
+                        background-color: rgb(255, 255, 255);
                         border-radius: 20px;
                         padding: 4px 10px;
                         margin-right: 8px;
-                        margin-top:8px;
-                        color:rgb(0, 0, 0);
+                        margin-top: 8px;
+                        color: rgb(0, 0, 0);
                         font-size: 0.9rem;
                         box-shadow: 0px 2px 4.6px 0px rgba(0, 0, 0, 0.27);
                     ">
-                        ${kw} 
+                        ${kw}
                         <span style="cursor:pointer; margin-left:6px;" data-index="${index}" class="remove-keyword"><strong>X</strong></span>
                     </span>
                 `;
@@ -69,16 +86,15 @@ document.addEventListener("DOMContentLoaded", () => {
             filtersHTML += `</div>`;
             listDiv.innerHTML = filtersHTML;
 
-            // Add remove button functionality
             document.querySelectorAll(".remove-keyword").forEach(btn => {
                 btn.addEventListener("click", (e) => {
                     const indexToRemove = parseInt(e.target.getAttribute("data-index"));
                     activeKeywords.splice(indexToRemove, 1);
-                    runSearch(); // 🔁 re-run search with updated filters
+                    runSearch();
                 });
             });
 
-            // Show results
+            // Show book titles
             filteredBooks.forEach((book) => {
                 const item = document.createElement("div");
                 item.textContent = book.title;
@@ -86,24 +102,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 item.style.margin = "0.3em 0";
                 item.style.fontWeight = "bold";
                 item.style.color = "#000d36";
+                item.style.position = "relative";
 
-            item.addEventListener("click", () => {
-                bookDiv.innerHTML = `
-                    <div style="color: white; font-family: Montserrat; padding: 1em;">
-                        <h2>${book.title}</h2>
-                        <p><strong>Author:</strong> ${book.author}</p>
-                        <p><strong>Published:</strong> ${book.published}</p>
-                        <p><strong>Description:</strong> ${book.description}</p>
-                        <p><strong>Location:</strong> ${book.location || "Not specified"}</p>
-                        <iframe src="uploads/${encodeURIComponent(book.pdfUrl)}.pdf"
-                                width="100%" height="400px" style="border:none; margin-top:1em;"></iframe>
-                    </div>
-                `;
+                item.addEventListener("mouseenter", (e) => {
+                    globalTooltip.innerHTML = `<strong>Author:</strong> ${book.author}<br><strong>Published:</strong> ${book.published}`;
+                    const rect = item.getBoundingClientRect();
+                    globalTooltip.style.left = rect.left + "px";
+                    globalTooltip.style.top = rect.bottom + window.scrollY + 4 + "px";
+                    globalTooltip.style.display = "block";
+                });
+
+                item.addEventListener("mouseleave", () => {
+                    globalTooltip.style.display = "none";
+                });
+
+                item.addEventListener("click", () => {
+                    bookDiv.innerHTML = `
+                        <div style="color: white; font-family: Montserrat; padding: 1em;">
+                            <h2>${book.title}</h2>
+                            <p><strong>Author:</strong> ${book.author}</p>
+                            <p><strong>Published:</strong> ${book.published}</p>
+                            <p><strong>Description:</strong> ${book.description}</p>
+                            <p><strong>Location:</strong> ${book.location || "Not specified"}</p>
+                            <iframe src="uploads/${encodeURIComponent(book.pdfUrl)}.pdf"
+                                    width="100%" height="400px" style="border:none; margin-top:1em;"></iframe>
+                        </div>
+                    `;
+                });
+
+                listDiv.appendChild(item);
             });
-
-            item.appendChild(tooltip);
-            listDiv.appendChild(item);
-        });
 
         } catch (err) {
             console.error("🔥 Full error:", err);
@@ -111,10 +139,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 🔍 On search submit
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const newKeyword = keywordInput.value.trim().toLowerCase();
         if (!newKeyword || activeKeywords.includes(newKeyword)) return;
 
@@ -123,12 +149,12 @@ document.addEventListener("DOMContentLoaded", () => {
         await runSearch();
     });
 
-    // 🔁 On reset button click
     resetBtn.addEventListener("click", (e) => {
         e.preventDefault();
         activeKeywords = [];
         keywordInput.value = "";
         listDiv.innerHTML = "";
         bookDiv.innerHTML = "";
+        globalTooltip.style.display = "none";
     });
 });
