@@ -75,4 +75,16 @@ document.addEventListener("DOMContentLoaded", () => {
             listDiv.innerHTML = "<p style='color:red;'>Error loading books 😓</p>";
         }
     });
+    const resetBtn = document.getElementById("reset");
+
+    resetBtn.addEventListener("click", (e) => {
+        e.preventDefault(); // prevent default reset behavior
+
+        // Clear keywords and UI
+        activeKeywords = [];
+        keywordInput.value = "";
+        listDiv.innerHTML = "";
+        bookDiv.innerHTML = "";
+    });
+
 });
