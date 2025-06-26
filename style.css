@@ -37,6 +37,7 @@ div#book{
     border:3px solid #5c5c7c;
     border-radius:4px;
     margin-right:.5em;
+    overflow-y: hidden;
 }
 
 div.form{
