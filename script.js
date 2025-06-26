@@ -6,45 +6,79 @@ document.addEventListener("DOMContentLoaded", () => {
     const keywordInput = document.getElementById("keyword");
     const listDiv = document.querySelector(".list");
     const bookDiv = document.getElementById("book");
+    const resetBtn = document.getElementById("reset");
 
     let activeKeywords = [];
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const newKeyword = keywordInput.value.trim().toLowerCase();
-        if (!newKeyword || activeKeywords.includes(newKeyword)) return;
-
-        activeKeywords.push(newKeyword);
-        keywordInput.value = "";
+    // 🔁 Reusable search function
+    async function runSearch() {
         listDiv.innerHTML = "🔍 Searching...";
         bookDiv.innerHTML = "";
 
         try {
-            // Fetch books from Firestore
             const booksCol = collection(db, "books");
             const snapshot = await getDocs(booksCol);
             const allBooks = snapshot.docs.map(doc => doc.data());
 
-            // Filter books using keywords
             const filteredBooks = allBooks.filter(book =>
-                activeKeywords.some(kw =>
-                    book.title.toLowerCase().includes(kw) ||
-                    book.author.toLowerCase().includes(kw) ||
-                    (book.description?.toLowerCase().includes(kw) || "").includes(kw) ||
-                    (book.keywords || []).some(k => k.toLowerCase().includes(kw))
-                )
+                activeKeywords.some(kw => {
+                    const title = (book.title || "").toLowerCase();
+                    const author = (book.author || "").toLowerCase();
+                    const description = (book.description || "").toLowerCase();
+                    const keywords = Array.isArray(book.keywords) ? book.keywords : [];
+
+                    return (
+                        title.includes(kw) ||
+                        author.includes(kw) ||
+                        description.includes(kw) ||
+                        keywords.some(k => (k || "").toLowerCase().includes(kw))
+                    );
+                })
             );
 
-            // If no results
+
             if (!filteredBooks.length) {
                 listDiv.innerHTML = `<p>No books found for keywords: <strong>${activeKeywords.join(", ")}</strong></p>`;
                 return;
             }
 
-            // Show filtered titles
-            listDiv.innerHTML = `<p style="margin-bottom: 0.5em;">Filtered by: <strong>${activeKeywords.join(", ")}</strong></p>`;
+            // Render filter chips
+            let filtersHTML = `<div style="margin-bottom: 1em; font-family: Montserrat; font-weight: 500;">
+                🔍 Filters: `;
 
+            activeKeywords.forEach((kw, index) => {
+                filtersHTML += `
+                    <span style="
+                        display: inline-block;
+                        border: 1.5px solid rgb(51, 51, 51);
+                        background-color:rgb(255, 255, 255);
+                        border-radius: 20px;
+                        padding: 4px 10px;
+                        margin-right: 8px;
+                        margin-top:8px;
+                        color:rgb(0, 0, 0);
+                        font-size: 0.9rem;
+                        box-shadow: 0px 2px 4.6px 0px rgba(0, 0, 0, 0.27);
+                    ">
+                        ${kw} 
+                        <span style="cursor:pointer; margin-left:6px;" data-index="${index}" class="remove-keyword"><strong>X</strong></span>
+                    </span>
+                `;
+            });
+
+            filtersHTML += `</div>`;
+            listDiv.innerHTML = filtersHTML;
+
+            // Add remove button functionality
+            document.querySelectorAll(".remove-keyword").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const indexToRemove = parseInt(e.target.getAttribute("data-index"));
+                    activeKeywords.splice(indexToRemove, 1);
+                    runSearch(); // 🔁 re-run search with updated filters
+                });
+            });
+
+            // Show results
             filteredBooks.forEach((book) => {
                 const item = document.createElement("div");
                 item.textContent = book.title;
@@ -71,20 +105,29 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
         } catch (err) {
-            console.error("Error loading books:", err);
+            console.error("🔥 Full error:", err);
             listDiv.innerHTML = "<p style='color:red;'>Error loading books 😓</p>";
         }
+    }
+
+    // 🔍 On search submit
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const newKeyword = keywordInput.value.trim().toLowerCase();
+        if (!newKeyword || activeKeywords.includes(newKeyword)) return;
+
+        activeKeywords.push(newKeyword);
+        keywordInput.value = "";
+        await runSearch();
     });
-    const resetBtn = document.getElementById("reset");
 
+    // 🔁 On reset button click
     resetBtn.addEventListener("click", (e) => {
-        e.preventDefault(); // prevent default reset behavior
-
-        // Clear keywords and UI
+        e.preventDefault();
         activeKeywords = [];
         keywordInput.value = "";
         listDiv.innerHTML = "";
         bookDiv.innerHTML = "";
     });
-
 });
