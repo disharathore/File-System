@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let activeKeywords = [];
 
-    // Tooltip setup (single shared box)
+    // Tooltip setup (shared element)
     const globalTooltip = document.createElement("div");
     globalTooltip.className = "hover-box";
     Object.assign(globalTooltip.style, {
@@ -54,11 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             );
 
-            if (!filteredBooks.length) {
-                listDiv.innerHTML = `<p>No books found for keywords: <strong>${activeKeywords.join(", ")}</strong></p>`;
-                return;
-            }
-
             // Show keyword filters
             let filtersHTML = `<div style="margin-bottom: 1em; font-family: Montserrat; font-weight: 500;">
                 🔍 Filters: `;
@@ -86,6 +81,15 @@ document.addEventListener("DOMContentLoaded", () => {
             filtersHTML += `</div>`;
             listDiv.innerHTML = filtersHTML;
 
+            // Make sure remove buttons work even if no books found
+            // Set listDiv with filters and possibly "no result" message
+            if (!filteredBooks.length) {
+                listDiv.innerHTML = filtersHTML + `<p>No books found for keywords: <strong>${activeKeywords.join(", ")}</strong></p>`;
+            } else {
+                listDiv.innerHTML = filtersHTML;
+            }
+
+            // Now attach the remove button listeners
             document.querySelectorAll(".remove-keyword").forEach(btn => {
                 btn.addEventListener("click", (e) => {
                     const indexToRemove = parseInt(e.target.getAttribute("data-index"));
@@ -94,7 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             });
 
-            // Show book titles
+            if (!filteredBooks.length) return;
+
+
+            // Show matching book titles
             filteredBooks.forEach((book) => {
                 const item = document.createElement("div");
                 item.textContent = book.title;
