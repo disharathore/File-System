@@ -21,7 +21,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/books', bookRoutes);
 
 // ✅ MongoDB connection
-mongoose.connect('mongodb://localhost:27017/library', {
+mongoose.connect(process.env.MONGO_UR, {
 useNewUrlParser: true,
 useUnifiedTopology: true,
 }).then(() => {
