@@ -6,80 +6,86 @@ document.addEventListener("DOMContentLoaded", () => {
     const keywordInput = document.getElementById("keyword");
     const listDiv = document.querySelector(".list");
     const bookDiv = document.getElementById("book");
+    const resetBtn = document.getElementById("reset");
 
    let activeKeywords = [];
 
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    // 🔁 Reusable search function
+    async function runSearch() {
+        listDiv.innerHTML = "🔍 Searching...";
+        bookDiv.innerHTML = "";
 
-    const newKeyword = keywordInput.value.trim().toLowerCase();
-    if (!newKeyword || activeKeywords.includes(newKeyword)) return;
+        try {
+            const booksCol = collection(db, "books");
+            const snapshot = await getDocs(booksCol);
+            const allBooks = snapshot.docs.map(doc => doc.data());
 
-    activeKeywords.push(newKeyword);
-    keywordInput.value = "";
-    listDiv.innerHTML = "🔍 Searching...";
-    bookDiv.innerHTML = "";
+            const filteredBooks = allBooks.filter(book =>
+                activeKeywords.some(kw => {
+                    const title = (book.title || "").toLowerCase();
+                    const author = (book.author || "").toLowerCase();
+                    const description = (book.description || "").toLowerCase();
+                    const keywords = Array.isArray(book.keywords) ? book.keywords : [];
 
-    try {
-        const booksCol = collection(db, "books");
-        const snapshot = await getDocs(booksCol);
-        const allBooks = snapshot.docs.map(doc => doc.data());
-
-        const filteredBooks = allBooks.filter(book =>
-            activeKeywords.every(kw =>
-                book.title.toLowerCase().includes(kw) ||
-                book.author.toLowerCase().includes(kw) ||
-                (book.description?.toLowerCase().includes(kw) || "").includes(kw) ||
-                (book.keywords || []).some(k => k.toLowerCase().includes(kw))
-            )
-        );
-
-        if (!filteredBooks.length) {
-            listDiv.innerHTML = `<p>No books found for keywords: <strong>${activeKeywords.join(", ")}</strong></p>`;
-            return;
-        }
-
-        listDiv.innerHTML = `<p style="margin-bottom: 0.5em;">Filtered by: <strong>${activeKeywords.join(", ")}</strong></p>`;
-
-        filteredBooks.forEach((book) => {
-            const item = document.createElement("div");
-            item.textContent = book.title;
-            item.style.cursor = "pointer";
-            item.style.margin = "0.3em 0";
-            item.style.fontWeight = "bold";
-            item.style.color = "#000d36";
-            item.style.position = "relative";
-
-            // Tooltip creation
-            const tooltip = document.createElement("div");
-            tooltip.className = "hover-box";
-            tooltip.innerHTML = `
-                <strong>Author:</strong> ${book.author}<br>
-                <strong>Published:</strong> ${book.published}
-            `;
-            tooltip.style.position = "absolute";
-            tooltip.style.top = "0";
-            tooltip.style.left = "100%"; // aligns it directly to the right  
-            tooltip.style.marginLeft = "8px"; // small gap from the title
-            tooltip.style.background = "#fff";
-            tooltip.style.padding = "0.4em 0.6em";
-            tooltip.style.border = "1px solid #ccc";
-            tooltip.style.borderRadius = "4px";
-            tooltip.style.fontSize = "0.85rem";
-            tooltip.style.fontFamily = "Nunito";
-            tooltip.style.color = "#000";
-            tooltip.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
-            tooltip.style.whiteSpace = "nowrap";
-            tooltip.style.zIndex = "10";
-            tooltip.style.display = "none";
+                    return (
+                        title.includes(kw) ||
+                        author.includes(kw) ||
+                        description.includes(kw) ||
+                        keywords.some(k => (k || "").toLowerCase().includes(kw))
+                    );
+                })
+            );
 
 
-            item.addEventListener("mouseenter", () => {
-                tooltip.style.display = "block";
+            if (!filteredBooks.length) {
+                listDiv.innerHTML = `<p>No books found for keywords: <strong>${activeKeywords.join(", ")}</strong></p>`;
+                return;
+            }
+
+            // Render filter chips
+            let filtersHTML = `<div style="margin-bottom: 1em; font-family: Montserrat; font-weight: 500;">
+                🔍 Filters: `;
+
+            activeKeywords.forEach((kw, index) => {
+                filtersHTML += `
+                    <span style="
+                        display: inline-block;
+                        border: 1.5px solid rgb(51, 51, 51);
+                        background-color:rgb(255, 255, 255);
+                        border-radius: 20px;
+                        padding: 4px 10px;
+                        margin-right: 8px;
+                        margin-top:8px;
+                        color:rgb(0, 0, 0);
+                        font-size: 0.9rem;
+                        box-shadow: 0px 2px 4.6px 0px rgba(0, 0, 0, 0.27);
+                    ">
+                        ${kw} 
+                        <span style="cursor:pointer; margin-left:6px;" data-index="${index}" class="remove-keyword"><strong>X</strong></span>
+                    </span>
+                `;
             });
-            item.addEventListener("mouseleave", () => {
-                tooltip.style.display = "none";
+
+            filtersHTML += `</div>`;
+            listDiv.innerHTML = filtersHTML;
+
+            // Add remove button functionality
+            document.querySelectorAll(".remove-keyword").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const indexToRemove = parseInt(e.target.getAttribute("data-index"));
+                    activeKeywords.splice(indexToRemove, 1);
+                    runSearch(); // 🔁 re-run search with updated filters
+                });
             });
+
+            // Show results
+            filteredBooks.forEach((book) => {
+                const item = document.createElement("div");
+                item.textContent = book.title;
+                item.style.cursor = "pointer";
+                item.style.margin = "0.3em 0";
+                item.style.fontWeight = "bold";
+                item.style.color = "#000d36";
 
             item.addEventListener("click", () => {
                 bookDiv.innerHTML = `
@@ -99,9 +105,30 @@ form.addEventListener("submit", async (e) => {
             listDiv.appendChild(item);
         });
 
-    } catch (err) {
-        console.error("Error loading books:", err);
-        listDiv.innerHTML = "<p style='color:red;'>Error loading books 😓</p>";
+        } catch (err) {
+            console.error("🔥 Full error:", err);
+            listDiv.innerHTML = "<p style='color:red;'>Error loading books 😓</p>";
+        }
     }
-});
+
+    // 🔍 On search submit
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const newKeyword = keywordInput.value.trim().toLowerCase();
+        if (!newKeyword || activeKeywords.includes(newKeyword)) return;
+
+        activeKeywords.push(newKeyword);
+        keywordInput.value = "";
+        await runSearch();
+    });
+
+    // 🔁 On reset button click
+    resetBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        activeKeywords = [];
+        keywordInput.value = "";
+        listDiv.innerHTML = "";
+        bookDiv.innerHTML = "";
+    });
 });
