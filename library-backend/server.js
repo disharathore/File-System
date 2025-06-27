@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bookRoutes = require('./routes/books');
@@ -21,9 +22,10 @@ app.use('/uploads', express.static('uploads'));
 app.use('/books', bookRoutes);
 
 // ✅ MongoDB connection
-mongoose.connect(process.env.MONGO_UR, {
-useNewUrlParser: true,
-useUnifiedTopology: true,
+// Temporary hardcoded URI (for testing)
+mongoose.connect('mongodb://127.0.0.1:27017/library', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 }).then(() => {
 console.log("✅ Connected to MongoDB");
 }).catch(err => {
