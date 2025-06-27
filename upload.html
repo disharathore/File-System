@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Upload Book</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="upload.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="nav">
@@ -16,17 +19,19 @@
   </div>
 
   <div class="main">
-    <form id="uploadForm" enctype="multipart/form-data">
-      <label>Title: <input type="text" id="title" required /></label><br>
-      <label>Author: <input type="text" id="author" required /></label><br>
-      <label>Published Year: <input type="text" id="published" required /></label><br>
-      <label>Description: <textarea id="description" required></textarea></label><br>
-      <label>Location: <input type="text" id="location" required /></label><br>
-      <label>Keywords (comma-separated): <input type="text" id="keywords" required /></label><br>
-      <button type="submit">📤 Upload</button>
-    </form>
-    
-    <div id="message" style="margin-top: 1em; font-weight: bold;"></div>
+    <div class="edit-section">
+      <form id="uploadForm" enctype="multipart/form-data">
+        <label>Title: <input type="text" id="title" required /></label><br>
+        <label>Author: <input type="text" id="author" required /></label><br>
+        <label>Published Year: <input type="text" id="published" required /></label><br>
+        <label>Description: <textarea id="description" required></textarea></label><br>
+        <label>Location: <input type="text" id="location" required /></label><br>
+        <label>Keywords (comma-separated): <input type="text" id="keywords" required /></label><br>
+        <button type="submit">📤 Upload</button>
+      </form>
+      
+      <div id="message" style="margin-top: 1em; font-weight: bold;"></div>
+    </div>
   </div>
 
   <script type="module" src="upload.js"></script>
