@@ -1,5 +1,6 @@
-import { db } from './firebase-app.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db, storage } from './firebase-app.js';
+import { collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("form");
@@ -7,10 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const listDiv = document.querySelector(".list");
     const bookDiv = document.getElementById("book");
     const resetBtn = document.getElementById("reset");
+    const uploadForm = document.getElementById("uploadForm");
 
     let activeKeywords = [];
 
-    // Tooltip setup (shared element)
+    // 🟨 Tooltip setup
     const globalTooltip = document.createElement("div");
     globalTooltip.className = "hover-box";
     Object.assign(globalTooltip.style, {
@@ -29,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     document.body.appendChild(globalTooltip);
 
+    // 🔍 SEARCH FUNCTION
     async function runSearch() {
         listDiv.innerHTML = "🔍 Searching...";
         bookDiv.innerHTML = "";
@@ -44,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     const author = (book.author || "").toLowerCase();
                     const description = (book.description || "").toLowerCase();
                     const keywords = Array.isArray(book.keywords) ? book.keywords : [];
-
                     return (
                         title.includes(kw) ||
                         author.includes(kw) ||
@@ -54,42 +56,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             );
 
-            // Show keyword filters
-            let filtersHTML = `<div style="margin-bottom: 1em; font-family: Montserrat; font-weight: 500;">
-                🔍 Filters: `;
-
+            let filtersHTML = `<div style="margin-bottom: 1em; font-family: Montserrat; font-weight: 500;">🔍 Filters: `;
             activeKeywords.forEach((kw, index) => {
                 filtersHTML += `
-                    <span style="
-                        display: inline-block;
-                        border: 1.5px solid rgb(51, 51, 51);
-                        background-color: rgb(255, 255, 255);
-                        border-radius: 20px;
-                        padding: 4px 10px;
-                        margin-right: 8px;
-                        margin-top: 8px;
-                        color: rgb(0, 0, 0);
-                        font-size: 0.9rem;
-                        box-shadow: 0px 2px 4.6px 0px rgba(0, 0, 0, 0.27);
-                    ">
-                        ${kw}
+                    <span style="display:inline-block; border:1.5px solid #333; background:#fff; border-radius:20px;
+                                 padding:4px 10px; margin-right:8px; margin-top:8px; color:#000; font-size:0.9rem;
+                                 box-shadow:0 2px 4.6px rgba(0,0,0,0.27);">
+                        ${kw} 
                         <span style="cursor:pointer; margin-left:6px;" data-index="${index}" class="remove-keyword"><strong>X</strong></span>
-                    </span>
-                `;
+                    </span>`;
             });
-
             filtersHTML += `</div>`;
+
             listDiv.innerHTML = filtersHTML;
 
-            // Make sure remove buttons work even if no books found
-            // Set listDiv with filters and possibly "no result" message
-            if (!filteredBooks.length) {
-                listDiv.innerHTML = filtersHTML + `<p>No books found for keywords: <strong>${activeKeywords.join(", ")}</strong></p>`;
-            } else {
-                listDiv.innerHTML = filtersHTML;
-            }
-
-            // Now attach the remove button listeners
             document.querySelectorAll(".remove-keyword").forEach(btn => {
                 btn.addEventListener("click", (e) => {
                     const indexToRemove = parseInt(e.target.getAttribute("data-index"));
@@ -98,27 +78,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             });
 
-            if (!filteredBooks.length) return;
+            if (!filteredBooks.length) {
+                listDiv.innerHTML += `<p>No books found for keywords: <strong>${activeKeywords.join(", ")}</strong></p>`;
+                return;
+            }
 
-
-            // Show matching book titles
+            // 📕 Render Book Titles + Tooltip
             filteredBooks.forEach((book) => {
                 const item = document.createElement("div");
                 item.textContent = book.title;
-                item.style.cursor = "pointer";
-                item.style.margin = "0.3em 0";
-                item.style.fontWeight = "bold";
-                item.style.color = "#000d36";
-                item.style.position = "relative";
+                Object.assign(item.style, {
+                    cursor: "pointer",
+                    margin: "0.3em 0",
+                    fontWeight: "bold",
+                    color: "#000d36",
+                    position: "relative"
+                });
 
-                item.addEventListener("mouseenter", (e) => {
+                item.addEventListener("mouseenter", () => {
                     globalTooltip.innerHTML = `<strong>Author:</strong> ${book.author}<br><strong>Published:</strong> ${book.published}`;
                     const rect = item.getBoundingClientRect();
                     globalTooltip.style.left = rect.left + "px";
                     globalTooltip.style.top = rect.bottom + window.scrollY + 4 + "px";
                     globalTooltip.style.display = "block";
                 });
-
                 item.addEventListener("mouseleave", () => {
                     globalTooltip.style.display = "none";
                 });
@@ -131,10 +114,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             <p><strong>Published:</strong> ${book.published}</p>
                             <p><strong>Description:</strong> ${book.description}</p>
                             <p><strong>Location:</strong> ${book.location || "Not specified"}</p>
-                            <iframe src="uploads/${encodeURIComponent(book.pdfUrl)}.pdf"
-                                    width="100%" height="400px" style="border:none; margin-top:1em;"></iframe>
-                        </div>
-                    `;
+                            <iframe src="${book.pdfUrl}" width="100%" height="400px" style="border:none; margin-top:1em;"></iframe>
+                        </div>`;
                 });
 
                 listDiv.appendChild(item);
@@ -146,16 +127,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // 🔍 Add keyword and search
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const newKeyword = keywordInput.value.trim().toLowerCase();
         if (!newKeyword || activeKeywords.includes(newKeyword)) return;
-
         activeKeywords.push(newKeyword);
         keywordInput.value = "";
         await runSearch();
     });
 
+    // ♻️ Reset button
     resetBtn.addEventListener("click", (e) => {
         e.preventDefault();
         activeKeywords = [];
@@ -163,5 +145,38 @@ document.addEventListener("DOMContentLoaded", () => {
         listDiv.innerHTML = "";
         bookDiv.innerHTML = "";
         globalTooltip.style.display = "none";
+    });
+
+    // 📤 Upload book handler
+    uploadForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const title = document.getElementById("title").value;
+        const author = document.getElementById("author").value;
+        const published = document.getElementById("published").value;
+        const description = document.getElementById("description").value;
+        const keywords = document.getElementById("keywords").value.split(",").map(k => k.trim().toLowerCase());
+        const file = document.getElementById("pdfFile").files[0];
+
+        if (!file || !title || !author) {
+            alert("Please fill all fields and select a PDF.");
+            return;
+        }
+
+        try {
+            const storageRef = ref(storage, `books/${file.name}`);
+            const snapshot = await uploadBytes(storageRef, file);
+            const pdfUrl = await getDownloadURL(snapshot.ref);
+
+            const bookData = {
+                title, author, published, description, keywords, pdfUrl, location: "Not specified"
+            };
+
+            await addDoc(collection(db, "books"), bookData);
+            alert("✅ Book uploaded!");
+            uploadForm.reset();
+        } catch (err) {
+            console.error("❌ Upload Error:", err);
+            alert("Upload failed");
+        }
     });
 });

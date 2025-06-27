@@ -13,28 +13,30 @@
 </head>
 <body>
     <div class="nav">
-        <h1>📚  LIBRARY FILE SYSTEM</h1>
+        <h1>📚 LIBRARY FILE SYSTEM</h1>
         <div>
             <a href="index.html">Search</a>
-            <a href="">Upload</a>
+            <a href="upload.html">Upload</a>
             <a href="edit.html">Edit</a>
         </div>
     </div>
+
     <div class="main">
+        <!-- Search Section -->
         <div class="form">
             <form>
-                <label for="keyword">Enter Keyword here :</label>
-                <br>
-                <input type="text" name="keyword" id="keyword" placeholder="Keyword" autocomplete="on" required autofocus>
-                <br>
+                <label for="keyword">Enter Keyword here :</label><br>
+                <input type="text" name="keyword" id="keyword" placeholder="Keyword" required autofocus><br>
                 <button type="submit" id="submit">Search</button>
                 <button type="reset" id="reset">Reset</button>
             </form>
             <div class="list"></div>
-
         </div>
+
         <div id="book"></div>
+
     </div>
+
     <script type="module" src="script.js"></script>
 </body>
 </html>
