@@ -1,6 +1,5 @@
-import { db, storage } from './firebase-app.js';
-import { collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { db } from './firebase-app.js';
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("form");
@@ -8,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const listDiv = document.querySelector(".list");
     const bookDiv = document.getElementById("book");
     const resetBtn = document.getElementById("reset");
-    const uploadForm = document.getElementById("uploadForm");
 
     let activeKeywords = [];
 
@@ -107,6 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 item.addEventListener("click", () => {
+                    const fileName = encodeURIComponent(book.title) + ".pdf";
+                    const filePath = `/uploads/${fileName}`;
                     bookDiv.innerHTML = `
                         <div style="color: white; font-family: Montserrat; padding: 1em;">
                             <h2>${book.title}</h2>
@@ -114,10 +114,11 @@ document.addEventListener("DOMContentLoaded", () => {
                             <p><strong>Published:</strong> ${book.published}</p>
                             <p><strong>Description:</strong> ${book.description}</p>
                             <p><strong>Location:</strong> ${book.location || "Not specified"}</p>
-                            <iframe src="${book.pdfUrl}" 
+                            <iframe src="${filePath}" 
                             width="100%" height="400px" style="border:none; margin-top:1em;"></iframe>
                         </div>`;
                 });
+
 
                 listDiv.appendChild(item);
             });
@@ -146,38 +147,5 @@ document.addEventListener("DOMContentLoaded", () => {
         listDiv.innerHTML = "";
         bookDiv.innerHTML = "";
         globalTooltip.style.display = "none";
-    });
-
-    // 📤 Upload book handler
-    uploadForm?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const title = document.getElementById("title").value;
-        const author = document.getElementById("author").value;
-        const published = document.getElementById("published").value;
-        const description = document.getElementById("description").value;
-        const keywords = document.getElementById("keywords").value.split(",").map(k => k.trim().toLowerCase());
-        const file = document.getElementById("pdfFile").files[0];
-
-        if (!file || !title || !author) {
-            alert("Please fill all fields and select a PDF.");
-            return;
-        }
-
-        try {
-            const storageRef = ref(storage, `books/${file.name}`);
-            const snapshot = await uploadBytes(storageRef, file);
-            const pdfUrl = await getDownloadURL(snapshot.ref);
-
-            const bookData = {
-                title, author, published, description, keywords, pdfUrl, location: "Not specified"
-            };
-
-            await addDoc(collection(db, "books"), bookData);
-            alert("✅ Book uploaded!");
-            uploadForm.reset();
-        } catch (err) {
-            console.error("❌ Upload Error:", err);
-            alert("Upload failed");
-        }
     });
 });
