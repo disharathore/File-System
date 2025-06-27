@@ -5,23 +5,63 @@
     <meta name="author" content="Deepanshi and Disha UwU">
     <title>Edit file data</title>
     <link rel="icon" type="image" href="fav.jpg"> 
-    <link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="edit.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="nav">
-        <h1>📚  LIBRARY FILE SYSTEM</h1>
+        <h1>📚 LIBRARY FILE SYSTEM</h1>
         <div>
             <a href="index.html">Search</a>
             <a href="">Upload</a>
             <a href="">Edit</a>
         </div>
     </div>
-    <div class="main">
 
+    <div class="main">
+        <div class="edit-section">
+            <form id="editForm">
+                <label for="searchTitle">Enter book to edit</label>
+                <input type="text" id="searchTitle" placeholder="Book title to search" required />
+                <button type="button" id="searchBtn">Search</button>
+                <button type="button" id="cancelBtn">Cancel</button>
+
+                <div id="formFields" style="display: none;">
+                    <h3>Book 1</h3>
+
+                    <label>Author</label>
+                    <input type="text" id="author" />
+
+                    <label>Description</label>
+                    <textarea id="description"></textarea>
+
+                    <label>Publish date</label>
+                    <input type="text" id="published" />
+
+                    <label>Title</label>
+                    <input type="text" id="title" />
+
+                    <label>Location</label>
+                    <input type="text" id="location" />
+
+                    <label>Soft copy (upload PDF)</label>
+                    <input type="file" id="pdfUpload" accept=".pdf" />
+
+                    <label>Keywords</label>
+                    <div id="keywords-container"></div>
+
+                    <input type="text" id="new-keyword" placeholder="Add new keyword">
+                    <button type="button" onclick="addKeyword()">Add</button>
+
+
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <script type="module" src="edit.js"></script>
 </body>
 </html>

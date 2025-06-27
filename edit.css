@@ -1,0 +1,115 @@
+body{
+    background-color: white;
+    margin:0;
+    padding:0;
+    font-family:"Nunito";
+
+}
+
+div.nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin:2em;
+    margin-top:1.3em;
+}
+
+.nav div{
+    display: flex;
+    gap:1.5em;
+}
+
+.nav a{
+    color:#000;
+    text-decoration: none;
+    font-weight: 300;
+    font-family:"Nunito";
+    font-size:1.5rem;
+}
+
+.nav a:visited{
+    color: #000;
+    text-decoration:none;
+    font-weight: 300;
+    font-family:"Nunito";
+    font-size:1.5rem;
+}
+
+h1{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-family:"Nunito";
+    font-size:2rem;
+    font-weight:500;
+    margin-top:.5em;
+    margin-bottom:.5em;
+}
+
+.main {
+    padding: 2em;
+    max-width: 700px;
+    margin: auto;
+}
+
+.edit-section {
+    background: #fff;
+    padding: 2em;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+label {
+    display: block;
+    margin-top: 1.2em;
+    margin-bottom: 0.4em;
+    font-weight: 600;
+}
+
+input[type="text"],
+input[type="file"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    background-color: #eee;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+}
+
+textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+button {
+    margin-top: 1.5em;
+    padding: 0.6em 1.4em;
+    font-size: 1rem;
+    font-family: 'Nunito', sans-serif;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button[type="submit"] {
+    background-color: #4ade80; /* green */
+    color: black;
+}
+
+#searchBtn {
+    background-color: #4ade80;
+    color: black;
+    margin-right: 1em;
+}
+
+#cancelBtn {
+    background-color: #f87171;
+    color: black;
+}
+
+button:hover {
+    opacity: 0.9;
+}
