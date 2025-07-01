@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <p><strong>Published:</strong> ${book.published}</p>
                             <p><strong>Description:</strong> ${book.description}</p>
                             <p><strong>Location:</strong> ${book.location || "Not specified"}</p>
-                            <iframe src="${filePath}" 
+                            <iframe src="https://disharathore.github.io/File-System/uploads/${encodeURIComponent(book.pdfUrl)}"
                             width="100%" height="400px" style="border:none; margin-top:1em;"></iframe>
                         </div>`;
                 });
