@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const resetBtn = document.getElementById("reset");
 
     let activeKeywords = [];
+    const stopwords = ["the", "and", "this", "that", "book", "with", "from", "about", "have", "been", "was", "were", "you", "your", "for", "not", "are", "but"];
 
     // 🟨 Tooltip setup
     const globalTooltip = document.createElement("div");
@@ -55,23 +56,26 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             let filtersHTML = `<div style="margin-bottom: 1em; font-family: Montserrat; font-weight: 500;">🔍 Filters: `;
-            activeKeywords.forEach((kw, index) => {
+            activeKeywords.forEach(kw => {
                 filtersHTML += `
-                    <span style="display:inline-block; border:1.5px solid #333; background:#fff; border-radius:20px;
-                                 padding:4px 10px; margin-right:8px; margin-top:8px; color:#000; font-size:0.9rem;
-                                 box-shadow:0 2px 4.6px rgba(0,0,0,0.27);">
+                    <span 
+                        data-keyword="${kw}" 
+                        class="filter-badge"
+                        style="display:inline-block; border:1.5px solid #333; background:#fff; border-radius:20px;
+                               padding:4px 10px; margin-right:8px; margin-top:8px; color:#000; font-size:0.9rem;
+                               box-shadow:0 2px 4.6px rgba(0,0,0,0.27); cursor: default;">
                         ${kw} 
-                        <span style="cursor:pointer; margin-left:6px;" data-index="${index}" class="remove-keyword"><strong>X</strong></span>
+                        <strong class="remove-keyword" data-keyword="${kw}" style="cursor:pointer; margin-left:6px;">✖</strong>
                     </span>`;
             });
             filtersHTML += `</div>`;
-
             listDiv.innerHTML = filtersHTML;
 
+            // 🗙 Remove keyword logic
             document.querySelectorAll(".remove-keyword").forEach(btn => {
                 btn.addEventListener("click", (e) => {
-                    const indexToRemove = parseInt(e.target.getAttribute("data-index"));
-                    activeKeywords.splice(indexToRemove, 1);
+                    const kwToRemove = e.target.getAttribute("data-keyword");
+                    activeKeywords = activeKeywords.filter(k => k !== kwToRemove);
                     runSearch();
                 });
             });
@@ -119,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>`;
                 });
 
-
                 listDiv.appendChild(item);
             });
 
@@ -134,7 +137,29 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         const newKeyword = keywordInput.value.trim().toLowerCase();
         if (!newKeyword || activeKeywords.includes(newKeyword)) return;
+
         activeKeywords.push(newKeyword);
+
+        const booksCol = collection(db, "books");
+        const snapshot = await getDocs(booksCol);
+        const allBooks = snapshot.docs.map(doc => doc.data());
+
+        allBooks.forEach(book => {
+            const description = (book.description || "").toLowerCase();
+            if (description.includes(newKeyword)) {
+                const words = description.split(/\W+/);
+                words.forEach(word => {
+                    if (
+                        word.length > 3 &&
+                        !activeKeywords.includes(word) &&
+                        !stopwords.includes(word)
+                    ) {
+                        activeKeywords.push(word);
+                    }
+                });
+            }
+        });
+
         keywordInput.value = "";
         await runSearch();
     });
