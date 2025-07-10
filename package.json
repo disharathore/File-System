@@ -1,8 +1,11 @@
 {
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
     "express": "^5.1.0",
-    "mongoose": "^8.16.0"
+    "firebase-admin": "^13.4.0",
+    "mongoose": "^8.16.0",
+    "pdf-parse": "^1.1.1"
   },
   "name": "filesystem-main",
   "version": "1.0.0",
@@ -13,5 +16,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/disharathore/File-System.git"
+  },
+  "bugs": {
+    "url": "https://github.com/disharathore/File-System/issues"
+  },
+  "homepage": "https://github.com/disharathore/File-System#readme",
   "description": ""
 }

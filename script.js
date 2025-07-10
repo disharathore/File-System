@@ -44,14 +44,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 activeKeywords.every(kw => {
                     const title = (book.title || "").toLowerCase();
                     const author = (book.author || "").toLowerCase();
-                    const description = (book.description || "").toLowerCase();
+                    const fullText = (book.fullText || "").toLowerCase();
                     const keywords = Array.isArray(book.keywords) ? book.keywords : [];
-                    return (
+
+                    const basicMatch =
                         title.includes(kw) ||
                         author.includes(kw) ||
-                        description.includes(kw) ||
-                        keywords.some(k => (k || "").toLowerCase().includes(kw))
-                    );
+                        keywords.some(k => (k || "").toLowerCase().includes(kw));
+
+                    return basicMatch || fullText.includes(kw);
                 })
             );
 
@@ -139,27 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!newKeyword || activeKeywords.includes(newKeyword)) return;
 
         activeKeywords.push(newKeyword);
-
-        const booksCol = collection(db, "books");
-        const snapshot = await getDocs(booksCol);
-        const allBooks = snapshot.docs.map(doc => doc.data());
-
-        allBooks.forEach(book => {
-            const description = (book.description || "").toLowerCase();
-            if (description.includes(newKeyword)) {
-                const words = description.split(/\W+/);
-                words.forEach(word => {
-                    if (
-                        word.length > 3 &&
-                        !activeKeywords.includes(word) &&
-                        !stopwords.includes(word)
-                    ) {
-                        activeKeywords.push(word);
-                    }
-                });
-            }
-        });
-
         keywordInput.value = "";
         await runSearch();
     });
