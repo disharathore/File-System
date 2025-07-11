@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 item.addEventListener("click", () => {
                     const fileName = encodeURIComponent(book.title) + ".pdf";
-                    const filePath = `/uploads/${fileName}`;
+                    const filePath = `./uploads/${fileName}`;
                     bookDiv.innerHTML = `
                         <div style="color: white; font-family: Montserrat; padding: 1em;">
                             <h2>${book.title}</h2>
