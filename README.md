@@ -119,13 +119,13 @@ Prevents long-term catalog inconsistencies.
 ## 📸 Application Screenshots
 
 ### 🔎 Search Interface
-<img src="images/search.png" width="700">
+<img src="images/preview.png" width="700">
 
 ### 📚 Filtered Results
-<img src="images/results.png" width="700">
+<img src="images/search.png" width="700">
 
-### 📖 Book Preview Panel
-<img src="images/preview.png" width="700">
+### 📖 Book Edit Panel
+<img src="images/edit.png" width="700">
 
 ### 🔐 Admin Upload Panel
 <img src="images/upload.png" width="700">
