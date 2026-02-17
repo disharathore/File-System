@@ -1,58 +1,59 @@
-# 📚 File System Simulation Portal  
+# 📚 File System Simulation Portal
+
 A secure, keyword-driven digital library retrieval system developed during my internship at DRDO.
 
 ---
 
 ## 🚀 Problem Statement
 
-In research labs and institutional libraries, books are often misplaced or returned to incorrect shelves.  
-Users may not know the exact title or physical location of a book.
+In research labs and institutional libraries, books are frequently misplaced or returned to incorrect shelves.  
+Users may not know the exact title or physical location of a required book.
 
-This project solves:
+### This project addresses:
 
-- Difficulty in locating books by exact title
-- Misplaced books within library shelves
-- Manual dependency on librarians for location tracking
-- Lack of searchable metadata system
+- Difficulty in locating books without exact titles
+- Misplacement within physical library shelves
+- Manual dependency on librarians for tracking
+- Lack of searchable metadata-based retrieval
 
 ---
 
 ## 🧠 Solution Overview
 
-The File System Simulation Portal enables:
+The File System Simulation Portal provides:
 
 - Keyword-based book discovery
-- Real-time metadata filtering
-- Role-based access for editing and uploading
-- Structured location tracking
-- PDF preview with complete metadata
+- Dynamic metadata filtering
+- Role-based access control (RBAC)
+- Structured shelf-location tracking
+- Integrated PDF preview with detailed metadata
 
-It simulates a secure internal library system for research environments.
+The system simulates a secure internal digital library environment for research institutions.
 
 ---
 
 ## 🏗 System Architecture
 
-- Frontend: JavaScript, HTML/CSS
-- Backend: Python (Flask/FastAPI – adjust to yours)
-- Database: SQLite
-- Document Storage: Structured metadata + PDF indexing
+**Frontend:** HTML, CSS, JavaScript  
+**Backend:** Python (Flask)  
+**Database:** SQLite  
+**Document Handling:** Metadata indexing + PDF storage  
 
 ---
 
 ## 👥 User Roles
 
 ### 🔍 Public User
-- Can search books using keywords
-- Can view filtered results
-- Can preview PDF
-- Can see metadata (location, author, pages)
+- Search books using partial keywords
+- View filtered results
+- Preview book PDF
+- Access metadata (author, pages, location)
 
 ### 🔐 Authorized User (Library Admin)
-- Can upload new books
-- Can edit book metadata
-- Can update incorrect locations
-- Can modify PDF file
+- Upload new book PDFs
+- Add or modify metadata
+- Update incorrect shelf locations
+- Replace or edit stored documents
 
 ---
 
@@ -62,90 +63,82 @@ It simulates a secure internal library system for research environments.
 
 Users can:
 - Enter partial keywords (e.g., "life")
-- System filters matching books
-- Displays a list of relevant titles
+- Retrieve dynamically filtered book lists
+- Perform multiple keyword attempts
 
-Example:
-Typing "life" may return:
-- The Monk Who Sold His Ferrari
-- The Alchemist
-- Wings of Fire
-- Ikigai
-- Man's Search for Meaning
-- The power of now
+**Example:**  
+Typing `"life"` may return:
 
-Search supports:
-- Multiple keyword attempts
-- Flexible matching logic
-- Structured filtering
+- The Monk Who Sold His Ferrari  
+- The Alchemist  
+- Wings of Fire  
+- Ikigai  
+- Man's Search for Meaning  
+- The Power of Now  
 
 ---
 
 ### 2️⃣ Book Detail Preview
 
-When a user selects a book:
+Upon selecting a book, the right-side panel displays:
 
-Right-side panel displays:
-- 📍 Shelf Location
-- ✍️ Author
-- 📄 Number of Pages
-- 📘 Book Title
-- 📑 PDF Preview
+- 📍 Shelf Location  
+- ✍️ Author  
+- 📄 Number of Pages  
+- 📘 Title  
+- 📑 Embedded PDF Preview  
 
-This allows:
-- Immediate verification before physically locating the book
+This enables quick verification before physically locating the book.
 
 ---
 
-### 3️⃣ Upload Feature (Restricted Access)
+### 3️⃣ Upload Module (Restricted Access)
 
 Authorized users can:
-- Upload new book PDFs
-- Add metadata (title, author, location)
-- Store books in structured database format
 
-Ensures:
-- Library expansion capability
-- Controlled document management
+- Upload new books
+- Add structured metadata
+- Store documents within database index
 
----
-
-### 4️⃣ Edit Feature (Restricted Access)
-
-If a book is found in a different shelf:
-
-Admin can:
-- Update location metadata
-- Modify book details
-- Replace PDF if needed
-
-Prevents long-term misplacement errors.
+Ensures controlled library expansion.
 
 ---
 
-## 📸 Screenshots
+### 4️⃣ Edit Module (Restricted Access)
+
+Admins can:
+
+- Update incorrect shelf locations
+- Modify metadata
+- Replace existing PDFs
+
+Prevents long-term catalog inconsistencies.
+
+---
+
+## 📸 Application Screenshots
 
 ### 🔎 Search Interface
-![Search Screenshot](images/keyword.png)
-![Search Screenshot](images/preview.png)
+<img src="images/search.png" width="700">
 
 ### 📚 Filtered Results
-![Results Screenshot](images/search.png)
+<img src="images/results.png" width="700">
 
-### 📖 Book Edit Panel
-![Preview Screenshot](images/edit.png)
+### 📖 Book Preview Panel
+<img src="images/preview.png" width="700">
 
-### 🔐 Admin Upload Page
-![Upload Screenshot](images/upload.png)
+### 🔐 Admin Upload Panel
+<img src="images/upload.png" width="700">
 
 ---
 
 ## 🛠 Tech Stack
 
 - Python
+- Flask
 - SQLite
-- JavaScript
 - HTML/CSS
+- JavaScript
 
 ---
 
@@ -156,9 +149,10 @@ git clone https://github.com/disharathore/File-System
 cd File-System
 pip install -r requirements.txt
 python app.py
-Open:
+Open in browser:
 
 http://localhost:5000
+
 🌐 Live Demo
 
 https://disharathore.github.io/File-System/index.html
