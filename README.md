@@ -124,13 +124,14 @@ Prevents long-term misplacement errors.
 ## 📸 Screenshots
 
 ### 🔎 Search Interface
-![Search Screenshot](images/search.png)
+![Search Screenshot](images/keyword.png)
+![Search Screenshot](images/preview.png)
 
 ### 📚 Filtered Results
-![Results Screenshot](images/results.png)
+![Results Screenshot](images/search.png)
 
-### 📖 Book Preview Panel
-![Preview Screenshot](images/preview.png)
+### 📖 Book Edit Panel
+![Preview Screenshot](images/edit.png)
 
 ### 🔐 Admin Upload Page
 ![Upload Screenshot](images/upload.png)
