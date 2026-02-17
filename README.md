@@ -70,7 +70,9 @@ Typing "life" may return:
 - The Monk Who Sold His Ferrari
 - The Alchemist
 - Wings of Fire
-- AI & Life Sciences
+- Ikigai
+- Man's Search for Meaning
+- The power of now
 
 Search supports:
 - Multiple keyword attempts
